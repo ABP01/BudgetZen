@@ -1,11 +1,11 @@
 import express from 'express';
 import {
-    createTransaction,
-    deleteTransaction,
-    getSummaryByUserId,
-    getTransactionsByUserId,
-    updateTransaction
-} from '../controllers/transactionsController.js';
+  createTransaction,
+  deleteTransaction,
+  getSummaryByUserId,
+  getTransactionsByUserId,
+  updateTransaction
+} from '../../controllers/transactionsController.js';
 
 const router = express.Router();
 

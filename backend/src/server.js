@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import express from "express";
-import { sql } from "./config/db.js";
-import { redis } from './config/upstash.js';
 import rateLimiter from "./middleware/rateLimiter.js";
+import { sql } from "./config/db.js";
+import { redis } from './src/middleware/rateLimiter.js'
 
 import transactionRoute from "./routes/transactionsRoute.js";
 
