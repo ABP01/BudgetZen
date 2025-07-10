@@ -8,11 +8,11 @@ const rateLimiter = async (req, res, next) => {
   try {
     const { success } = await ratelimit.limit(`rl:${req.ip}`);
     if (!success) {
-        return res.status(429).json({ message: 'Too many requests, please try again later.' });
+        return res.status(429).json({ message: 'Trop de requêtes, veuillez réessayer plus tard.' });
     }
     next();
   } catch (error) {
-    res.status(429).json({ error: "Rate limit exceeded" });
+    res.status(429).json({ error: "Limite de débit dépassée" });
   }
 };
 

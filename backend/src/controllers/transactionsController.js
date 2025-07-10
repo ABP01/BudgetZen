@@ -16,7 +16,7 @@ async function getTransactionsByUserId(req, res) {
     res.status(200).json(result);
   } catch (error) {
     console.error("Error fetching transactions:", error);
-    res.status(500).json({ error: "Failed to fetch transactions" });
+    res.status(500).json({ error: "Échec de la récupération des transactions" });
   }
 }
 
@@ -24,7 +24,7 @@ async function createTransaction(req, res) {
   try {
     const { user_id, title, amount, category } = req.body;
     if (!user_id || !title || !amount || !category) {
-      return res.status(400).json({ error: "All fields are required" });
+      return res.status(400).json({ error: "Tous les champs sont obligatoires" });
     }
 
     const transaction = await sql`
@@ -32,11 +32,11 @@ async function createTransaction(req, res) {
           VALUES (${user_id}, ${title}, ${amount}, ${category})
           RETURNING *
         `;
-    console.log("Transaction inserted successfully: ", transaction[0]);
+    console.log("Transaction insérée avec succès : ", transaction[0]);
     return res.status(201).json(transaction[0]);
   } catch (error) {
-    console.error("Error inserting transaction:", error);
-    res.status(500).json({ error: "Failed to insert transaction" });
+    console.error("Erreur lors de l'insertion de la transaction :", error);
+    res.status(500).json({ error: "Échec de l'insertion de la transaction" });
   }
 }
 
@@ -48,13 +48,13 @@ async function deleteTransaction(req, res) {
           RETURNING *
         `;
     if (result.length === 0) {
-      return res.status(404).json({ error: "Transaction not found" });
+      return res.status(404).json({ error: "Transaction non trouvée" });
     }
-    console.log("Transaction deleted successfully: ", result[0]);
+    console.log("Transaction supprimée avec succès : ", result[0]);
     return res.status(200).json(result[0]);
   } catch (error) {
-    console.error("Error deleting transaction:", error);
-    res.status(500).json({ error: "Failed to delete transaction" });
+    console.error("Erreur lors de la suppression de la transaction :", error);
+    res.status(500).json({ error: "Échec de la suppression de la transaction" });
   }
 }
 
@@ -63,7 +63,7 @@ async function updateTransaction(req, res) {
   const { user_id, title, amount, category } = req.body;
 
   if (!user_id || !title || !amount || !category) {
-    return res.status(400).json({ error: "All fields are required" });
+    return res.status(400).json({ error: "Tous les champs sont obligatoires" });
   }
 
   try {
@@ -74,13 +74,13 @@ async function updateTransaction(req, res) {
           RETURNING *
         `;
     if (result.length === 0) {
-      return res.status(404).json({ error: "Transaction not found" });
+      return res.status(404).json({ error: "Transaction non trouvée" });
     }
-    console.log("Transaction updated successfully: ", result[0]);
+    console.log("Transaction mise à jour avec succès : ", result[0]);
     return res.status(200).json(result[0]);
   } catch (error) {
-    console.error("Error updating transaction:", error);
-    res.status(500).json({ error: "Failed to update transaction" });
+    console.error("Erreur lors de la mise à jour de la transaction :", error);
+    res.status(500).json({ error: "Échec de la mise à jour de la transaction" });
   }
 }
 
@@ -112,13 +112,13 @@ async function getSummaryByUserId(req, res) {
       expenses: expenseResult[0].total_expense,
     });
   } catch (error) {
-    console.error("Error fetching summary:", error);
-    res.status(500).json({ error: "Failed to fetch summary" });
+    console.error("Erreur lors de la récupération du résumé :", error);
+    res.status(500).json({ error: "Échec de la récupération du résumé" });
   }
 }
 
 export {
-    createTransaction,
-    deleteTransaction, getSummaryByUserId, getTransactionsByUserId, updateTransaction
+  createTransaction,
+  deleteTransaction, getSummaryByUserId, getTransactionsByUserId, updateTransaction
 };
 
