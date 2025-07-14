@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/config/router_config.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/notification_provider.dart';
 import 'providers/transaction_provider.dart';
 
 void main() {
@@ -19,6 +20,7 @@ class BudgetZenApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp.router(
         title: 'BudgetZen',

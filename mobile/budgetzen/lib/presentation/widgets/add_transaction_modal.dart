@@ -335,7 +335,7 @@ class _AddTransactionModalState extends State<AddTransactionModal>
                           controller: _amountController,
                           label: 'Montant',
                           hint: '0.00',
-                          prefixIcon: const Icon(Icons.euro),
+                          prefixIcon: const Icon(Icons.money),
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),

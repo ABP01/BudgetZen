@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/services/currency_service.dart';
 import '../../data/models/transaction.dart';
 import '../../providers/transaction_provider.dart';
 
@@ -346,7 +347,10 @@ class _TransactionsScreenState extends State<TransactionsScreen>
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${isIncome ? '+' : '-'}€${transaction.amount.toStringAsFixed(2)}',
+                CurrencyService.formatTransactionAmount(
+                  transaction.amount,
+                  isIncome,
+                ),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: color,
@@ -481,7 +485,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
       (sum, t) => sum + (t.isIncome ? t.amount : -t.amount),
     );
 
-    return '${total >= 0 ? '+' : ''}€${total.toStringAsFixed(2)}';
+    return CurrencyService.formatTransactionAmount(total.abs(), total >= 0);
   }
 
   IconData _getCategoryIcon(String category) {

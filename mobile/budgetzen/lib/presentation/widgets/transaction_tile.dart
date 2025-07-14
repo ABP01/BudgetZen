@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/services/currency_service.dart';
 import '../../data/models/transaction.dart';
 
 class TransactionTile extends StatelessWidget {
@@ -22,11 +23,10 @@ class TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isIncome = transaction.isIncome;
     final amountColor = isIncome ? AppColors.success : AppColors.error;
-    final amountPrefix = isIncome ? '+' : '-';
-    final formattedAmount = NumberFormat.currency(
-      locale: 'fr_FR',
-      symbol: '€',
-    ).format(transaction.amount.abs());
+    final formattedAmount = CurrencyService.formatTransactionAmount(
+      transaction.amount,
+      isIncome,
+    );
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -98,7 +98,7 @@ class TransactionTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '$amountPrefix$formattedAmount',
+                    formattedAmount,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: amountColor,
                       fontWeight: FontWeight.bold,

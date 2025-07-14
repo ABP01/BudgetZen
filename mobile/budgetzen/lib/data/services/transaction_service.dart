@@ -1,11 +1,18 @@
 import '../../core/config/api_config.dart';
 import '../../core/services/api_service.dart';
 import '../models/transaction.dart';
+import 'local_transaction_service.dart';
 
 class TransactionService {
   final ApiService _apiService = ApiService();
+  final LocalTransactionService _localService = LocalTransactionService();
+  bool _useLocalMode = false;
 
   Future<List<Transaction>> getTransactionsByUserId(String userId) async {
+    if (_useLocalMode) {
+      return await _localService.getTransactionsByUserId(userId);
+    }
+
     try {
       final response = await _apiService.get(
         ApiConfig.transactionsEndpoint,
@@ -24,11 +31,17 @@ class TransactionService {
           .map((json) => Transaction.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      throw Exception('Erreur lors de la récupération des transactions: $e');
+      print('🔄 Connexion au serveur échouée, basculement en mode local');
+      _useLocalMode = true;
+      return await _localService.getTransactionsByUserId(userId);
     }
   }
 
   Future<List<Transaction>> getAllTransactions() async {
+    if (_useLocalMode) {
+      return await _localService.getAllTransactions();
+    }
+
     try {
       final response = await _apiService.get(ApiConfig.transactionsEndpoint);
 
@@ -44,11 +57,17 @@ class TransactionService {
           .map((json) => Transaction.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      throw Exception('Erreur lors de la récupération des transactions: $e');
+      print('🔄 Connexion au serveur échouée, basculement en mode local');
+      _useLocalMode = true;
+      return await _localService.getAllTransactions();
     }
   }
 
   Future<Transaction> createTransaction(Transaction transaction) async {
+    if (_useLocalMode) {
+      return await _localService.addTransaction(transaction);
+    }
+
     try {
       final response = await _apiService.post(
         ApiConfig.transactionsEndpoint,
@@ -57,11 +76,17 @@ class TransactionService {
 
       return Transaction.fromJson(response);
     } catch (e) {
-      throw Exception('Erreur lors de la création de la transaction: $e');
+      print('🔄 Connexion au serveur échouée, basculement en mode local');
+      _useLocalMode = true;
+      return await _localService.addTransaction(transaction);
     }
   }
 
   Future<Transaction> updateTransaction(int id, Transaction transaction) async {
+    if (_useLocalMode) {
+      return await _localService.updateTransaction(transaction);
+    }
+
     try {
       final response = await _apiService.put(
         '${ApiConfig.transactionsEndpoint}/$id',
@@ -70,15 +95,23 @@ class TransactionService {
 
       return Transaction.fromJson(response);
     } catch (e) {
-      throw Exception('Erreur lors de la mise à jour de la transaction: $e');
+      print('🔄 Connexion au serveur échouée, basculement en mode local');
+      _useLocalMode = true;
+      return await _localService.updateTransaction(transaction);
     }
   }
 
   Future<void> deleteTransaction(int id) async {
+    if (_useLocalMode) {
+      return await _localService.deleteTransaction(id);
+    }
+
     try {
       await _apiService.delete('${ApiConfig.transactionsEndpoint}/$id');
     } catch (e) {
-      throw Exception('Erreur lors de la suppression de la transaction: $e');
+      print('🔄 Connexion au serveur échouée, basculement en mode local');
+      _useLocalMode = true;
+      return await _localService.deleteTransaction(id);
     }
   }
 
@@ -127,21 +160,14 @@ class TransactionService {
   }
 
   double getTotalBalance(List<Transaction> transactions) {
-    return transactions.fold(
-      0.0,
-      (sum, transaction) => sum + transaction.amount,
-    );
+    return _localService.getTotalBalance(transactions);
   }
 
   double getTotalIncome(List<Transaction> transactions) {
-    return transactions
-        .where((transaction) => transaction.isIncome)
-        .fold(0.0, (sum, transaction) => sum + transaction.amount);
+    return _localService.getTotalIncome(transactions);
   }
 
   double getTotalExpenses(List<Transaction> transactions) {
-    return transactions
-        .where((transaction) => transaction.isExpense)
-        .fold(0.0, (sum, transaction) => sum + transaction.amount.abs());
+    return _localService.getTotalExpenses(transactions);
   }
 }

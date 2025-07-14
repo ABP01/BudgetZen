@@ -7,11 +7,13 @@ class AuthProvider extends ChangeNotifier {
   AuthStatus _status = AuthStatus.initial;
   String? _userId;
   String? _username;
+  String? _email;
   String? _errorMessage;
 
   AuthStatus get status => _status;
   String? get userId => _userId;
   String? get username => _username;
+  String? get email => _email;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
 
@@ -25,10 +27,12 @@ class AuthProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('user_id');
       final username = prefs.getString('username');
+      final email = prefs.getString('email');
 
       if (userId != null && username != null) {
         _userId = userId;
         _username = username;
+        _email = email;
         _setStatus(AuthStatus.authenticated);
       } else {
         _setStatus(AuthStatus.unauthenticated);
@@ -57,6 +61,7 @@ class AuthProvider extends ChangeNotifier {
 
       _userId = userId;
       _username = username;
+      _email = email;
       _setStatus(AuthStatus.authenticated);
 
       return true;
@@ -73,12 +78,14 @@ class AuthProvider extends ChangeNotifier {
       // Simuler une authentification
       final prefs = await SharedPreferences.getInstance();
       final username = prefs.getString('username') ?? 'Utilisateur';
+      final storedEmail = prefs.getString('email') ?? email;
       final userId =
           prefs.getString('user_id') ??
           DateTime.now().millisecondsSinceEpoch.toString();
 
       _userId = userId;
       _username = username;
+      _email = storedEmail;
       _setStatus(AuthStatus.authenticated);
 
       return true;
@@ -97,9 +104,32 @@ class AuthProvider extends ChangeNotifier {
 
       _userId = null;
       _username = null;
+      _email = null;
       _setStatus(AuthStatus.unauthenticated);
     } catch (e) {
       _setError('Erreur lors de la déconnexion');
+    }
+  }
+
+  Future<bool> updateUserData({String? username, String? email}) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      if (username != null) {
+        await prefs.setString('username', username);
+        _username = username;
+      }
+
+      if (email != null) {
+        await prefs.setString('email', email);
+        _email = email;
+      }
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _setError('Erreur lors de la mise à jour: $e');
+      return false;
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/services/currency_service.dart';
 import '../../providers/transaction_provider.dart';
 
 class BudgetScreen extends StatefulWidget {
@@ -141,7 +142,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  '€${totalBudget.toStringAsFixed(0)}',
+                                  CurrencyService.formatAmount(totalBudget),
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineMedium
@@ -178,7 +179,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                                 Row(
                                   children: [
                                     Text(
-                                      'Dépensé: €${totalSpent.toStringAsFixed(0)}',
+                                      'Dépensé: ${CurrencyService.formatAmount(totalSpent)}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
@@ -190,7 +191,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                                     ),
                                     const Spacer(),
                                     Text(
-                                      'Restant: €${remaining.toStringAsFixed(0)}',
+                                      'Restant: ${CurrencyService.formatAmount(remaining)}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
@@ -354,7 +355,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                       ),
                     ),
                     Text(
-                      '€${spent.toStringAsFixed(0)} / €${limit.toStringAsFixed(0)}',
+                      '${CurrencyService.formatAmount(spent)} / ${CurrencyService.formatAmount(limit)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -400,7 +401,7 @@ class _BudgetScreenState extends State<BudgetScreen>
               ),
               const Spacer(),
               Text(
-                '€${(limit - spent).toStringAsFixed(0)} restant',
+                '${CurrencyService.formatAmount(limit - spent)} restant',
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
