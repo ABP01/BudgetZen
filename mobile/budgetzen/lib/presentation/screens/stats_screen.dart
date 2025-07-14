@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/services/currency_service.dart';
 import '../../providers/transaction_provider.dart';
 import '../widgets/stats_card.dart';
 
@@ -169,7 +170,7 @@ class _StatsScreenState extends State<StatsScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '€${provider.totalBalance.toStringAsFixed(2)}',
+                    CurrencyService.formatAmount(provider.totalBalance),
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       color: AppColors.white,
                       fontWeight: FontWeight.bold,
@@ -239,7 +240,7 @@ class _StatsScreenState extends State<StatsScreen>
               Expanded(
                 child: StatsCard(
                   title: 'Revenus',
-                  value: '€${provider.totalIncome.toStringAsFixed(0)}',
+                  value: CurrencyService.formatAmount(provider.totalIncome),
                   icon: Icon(Icons.trending_up, color: AppColors.success),
                   color: AppColors.success,
                   subtitle:
@@ -250,7 +251,9 @@ class _StatsScreenState extends State<StatsScreen>
               Expanded(
                 child: StatsCard(
                   title: 'Dépenses',
-                  value: '€${provider.totalExpenses.abs().toStringAsFixed(0)}',
+                  value: CurrencyService.formatAmount(
+                    provider.totalExpenses.abs(),
+                  ),
                   icon: Icon(Icons.trending_down, color: AppColors.error),
                   color: AppColors.error,
                   subtitle:
@@ -341,7 +344,7 @@ class _StatsScreenState extends State<StatsScreen>
                 ),
               ),
               Text(
-                '€${amount.toStringAsFixed(0)}',
+                CurrencyService.formatAmount(amount),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
@@ -429,14 +432,14 @@ class _StatsScreenState extends State<StatsScreen>
                   children: [
                     _buildTrendItem(
                       'Moyenne des dépenses',
-                      '€${avgExpense.toStringAsFixed(2)}',
+                      CurrencyService.formatAmount(avgExpense),
                       Icons.bar_chart,
                       AppColors.warning,
                     ),
 
                     _buildTrendItem(
                       'Plus grosse dépense',
-                      '€${maxExpense.toStringAsFixed(2)}',
+                      CurrencyService.formatAmount(maxExpense),
                       Icons.arrow_upward,
                       AppColors.error,
                     ),

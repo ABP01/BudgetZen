@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseUrl = 'http://localhost:3000'; // Backend Node.js
+  static const String baseUrl = 'http://localhost:5001'; // Backend Node.js
   static const String apiPath = '/api';
 
   // Endpoints
