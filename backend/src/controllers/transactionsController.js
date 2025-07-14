@@ -22,14 +22,19 @@ async function getTransactionsByUserId(req, res) {
 
 async function createTransaction(req, res) {
   try {
-    const { user_id, title, amount, category } = req.body;
-    if (!user_id || !title || !amount || !category) {
+    const { user_id, title, amount, type, category } = req.body;
+    if (!user_id || !title || !amount || !type || !category) {
       return res.status(400).json({ error: "Tous les champs sont obligatoires" });
     }
 
+    // Validate type
+    if (!['income', 'expense'].includes(type)) {
+      return res.status(400).json({ error: "Le type doit être 'income' ou 'expense'" });
+    }
+
     const transaction = await sql`
-          INSERT INTO transactions (user_id, title, amount, category)
-          VALUES (${user_id}, ${title}, ${amount}, ${category})
+          INSERT INTO transactions (user_id, title, amount, type, category)
+          VALUES (${user_id}, ${title}, ${amount}, ${type}, ${category})
           RETURNING *
         `;
     console.log("Transaction insérée avec succès : ", transaction[0]);
@@ -60,16 +65,21 @@ async function deleteTransaction(req, res) {
 
 async function updateTransaction(req, res) {
   const { id } = req.params;
-  const { user_id, title, amount, category } = req.body;
+  const { user_id, title, amount, type, category } = req.body;
 
-  if (!user_id || !title || !amount || !category) {
+  if (!user_id || !title || !amount || !type || !category) {
     return res.status(400).json({ error: "Tous les champs sont obligatoires" });
+  }
+
+  // Validate type
+  if (!['income', 'expense'].includes(type)) {
+    return res.status(400).json({ error: "Le type doit être 'income' ou 'expense'" });
   }
 
   try {
     const result = await sql`
           UPDATE transactions
-          SET user_id = ${user_id}, title = ${title}, amount = ${amount}, category = ${category}
+          SET user_id = ${user_id}, title = ${title}, amount = ${amount}, type = ${type}, category = ${category}
           WHERE id = ${id}
           RETURNING *
         `;
@@ -87,29 +97,25 @@ async function updateTransaction(req, res) {
 async function getSummaryByUserId(req, res) {
   try {
     const { user_id } = req.params;
-    const balanceResult = await sql`
-      SELECT COALESCE(SUM(CASE WHEN category = 'Income' THEN amount ELSE 0 END), 0) AS total_income,
-             COALESCE(SUM(CASE WHEN category = 'Expense' THEN amount ELSE 0 END), 0) AS total_expense,
-             COALESCE(SUM(amount), 0) AS balance
-      FROM transactions
-      WHERE user_id = ${user_id};
-    `;
-
+    
     const incomeResult = await sql`
       SELECT COALESCE(SUM(amount), 0) AS total_income
       FROM transactions
-      WHERE user_id = ${user_id} AND category = 'Income';
+      WHERE user_id = ${user_id} AND type = 'income';
     `;
 
     const expenseResult = await sql`
       SELECT COALESCE(SUM(amount), 0) AS total_expense
       FROM transactions
-      WHERE user_id = ${user_id} AND category = 'Expense';
+      WHERE user_id = ${user_id} AND type = 'expense';
     `;
+
+    const balance = parseFloat(incomeResult[0].total_income) - parseFloat(expenseResult[0].total_expense);
+
     return res.status(200).json({
-      balance: balanceResult[0].balance,
-      income: incomeResult[0].total_income,
-      expenses: expenseResult[0].total_expense,
+      balance: balance,
+      income: parseFloat(incomeResult[0].total_income),
+      expenses: parseFloat(expenseResult[0].total_expense),
     });
   } catch (error) {
     console.error("Erreur lors de la récupération du résumé :", error);
